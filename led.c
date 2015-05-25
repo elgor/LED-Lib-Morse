@@ -22,7 +22,7 @@ Led_Id_Type led_id;
 // HAL: adjust these functions to your system
 // ----------------------------------------------------------------------------
 void LED_HAL_init(Led_Id_Type led_id){	
-	pinMode(led_id, OUTPUT); 				// led_id is stored 
+	pinMode(led_id, OUTPUT);  // led_id is stored 
 }
 
 void LED_HAL_set(LED_State_Type state){
@@ -107,8 +107,6 @@ unsigned int current_character_pos = 0;
 
 
 
-
-
 void LED_init(Led_Id_Type id){
 	led_id = id;
 	LED_HAL_init(id);
@@ -118,7 +116,6 @@ void LED_set(LED_State_Type state){
 	led_state = state;
 	LED_HAL_set(led_state);
 }
-
 
 
 // switch functions
@@ -132,7 +129,6 @@ void LED_switchOff(){
 }
 
 
-
 // blink functions
 void LED_blink(LED_Blink_Type speed){
 	LED_blinkPulse(speed, speed);
@@ -143,7 +139,6 @@ void LED_blinkPulse(Time_Type on_time, Time_Type off_time){
 	current_pulse.time_mark_on = on_time;
 	current_pulse.time_mark_off = current_pulse.time_mark_on + off_time;
 }
-
 
 
 // morse functions
@@ -173,7 +168,7 @@ void LED_loadNextCharacter(){
 	current_character_pos++;
 }
 
-void morseNextPulse(){
+void LED_morseNextPulse(){
 	if( pattern_length == 0){
 		LED_loadNextCharacter();
 	}
@@ -181,24 +176,24 @@ void morseNextPulse(){
 
 	if( pattern == 1 ){
 		current_pulse.time_mark_on = 0;
-		current_pulse.time_mark_off = MORSE_DAH_TIME + MORSE_DIT_TIME;
+		current_pulse.time_mark_off = MORSE_DAH_TIME + MORSE_DIT_TIME;  // + pause from last char = 7 * DIT_TIME 
 	} else {
-			if( pattern & (1 << pattern_length) ){
-				current_pulse.time_mark_on = MORSE_DAH_TIME;
-			} else {
-				current_pulse.time_mark_on = MORSE_DIT_TIME;
-			}
-		
-			if( pattern_length == 0){
-				if (current_character_pos < message_length) {
-					current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_DAH_TIME;	
-				} else {
-					current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_PAUSE_TIME;
-				}
-			} else {
-				current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_DIT_TIME;
-			}
+		if( pattern & (1 << pattern_length) ){
+			current_pulse.time_mark_on = MORSE_DAH_TIME;
+		} else {
+			current_pulse.time_mark_on = MORSE_DIT_TIME;
 		}
+	
+		if( pattern_length == 0){
+			if (current_character_pos < message_length) {
+				current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_DAH_TIME;	
+			} else {
+				current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_PAUSE_TIME;
+			}
+		} else {
+			current_pulse.time_mark_off = current_pulse.time_mark_on + MORSE_DIT_TIME;
+		}
+	}
 }
 
 void LED_morse(char* msg_string){
@@ -221,13 +216,13 @@ void LED_tick(Time_Type elapsed_time) {
 
 void LED_sync() {
 	if(led_mode == FIXED){
-		return;		// no timing needed
+		return;	 // no timing needed
 	}
 	if( led_state == OFF ){
 		if (time_counter >= current_pulse.time_mark_off) {
 			time_counter = 0;
 			if (led_mode == MORSE){
-			  morseNextPulse();
+			  LED_morseNextPulse();
 			}
 			if (current_pulse.time_mark_on > 0) { LED_set(ON); }
 		} else if (time_counter < current_pulse.time_mark_on) {

@@ -21,10 +21,9 @@ extern "C" {
 // HAL: adjust these types to your system
 // ----------------------------------------------------------------------------
 
-typedef unsigned int Time_Type;		// max. value: 7 * BLINK_TIME
-//const Time_Type BLINK_TIME = 250;	// arbitrary time basis (dot time in morse mode)
-#define BLINK_TIME 250
-typedef int Led_Id_Type;			// any led identifier e.g. struct with port and pin 
+typedef unsigned int Time_Type;     // max. value: 7 * BLINK_TIME
+#define BLINK_TIME (Time_Type)250   // arbitrary time basis (dot time in morse mode)
+typedef int Led_Id_Type;            // any led identifier e.g. struct with port and pin 
 
 // ----------------------------------------------------------------------------
 
